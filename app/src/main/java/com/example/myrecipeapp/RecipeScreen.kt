@@ -9,16 +9,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 
@@ -27,6 +32,7 @@ fun RecipeScreen( modifier: Modifier = Modifier){
     val recipeViewModel: MainViewModel= viewModel()
     val viewState by recipeViewModel.categoriesState
 
+
     Box(modifier = Modifier.fillMaxSize()){
         when{
             viewState.loading -> {
@@ -34,7 +40,7 @@ fun RecipeScreen( modifier: Modifier = Modifier){
             }
 
             viewState.error != null -> {
-                Text("ERROR OCCURRED")
+                Text("ERROR OCCURRED", modifier.align( Alignment.Center))
             }
             else -> {
                 CategoryScreen(categories = viewState.list)
@@ -45,7 +51,10 @@ fun RecipeScreen( modifier: Modifier = Modifier){
 
 @Composable
 fun CategoryScreen(categories: List<Category>){
-    LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier. fillMaxSize()){
+    LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 16.dp))
+    {
         items(categories){
             category ->
             CategoryItem(category = category)
@@ -54,21 +63,32 @@ fun CategoryScreen(categories: List<Category>){
 }
 
 @Composable
-fun CategoryItem(category: Category){
-    Column(modifier = Modifier.padding(8.dp).fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally)
-    {
-        Image(
-            painter = rememberAsyncImagePainter(category.strCategoryThumb),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize().aspectRatio(1f)
+fun CategoryItem(category: Category) {
+    Card(
+        modifier = Modifier.padding(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp).padding(bottom = 4.dp).fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         )
-        Text(
-            text = category.strCategory,
-            color = Color.Black,
-            style = TextStyle(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(top = 4.dp)
-        )
+        {
+            Image(
+                painter = rememberAsyncImagePainter(category.strCategoryThumb),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(12.dp))
+            )
+            Text(
+                text = category.strCategory,
+                color = Color.Black,
+                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp),
+                modifier = Modifier.padding(top = 6.dp)
+            )
 
+        }
     }
 }
